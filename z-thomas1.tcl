@@ -1,0 +1,325 @@
+#!/usr/bin/tclsh8.7
+#exit
+
+set editafter 0
+
+source api.tcl ; set lang de ; source langwiki.tcl ; #set token [login $wiki]
+source library.tcl
+while 1 {if [catch {set db [get_db dewiki]}] {after 60000 ; continue} else {break}}
+
+package require http
+package require tls
+package require tdom
+
+set out [read [set f [open z-thomas1.out]]] ; close $f
+set sout [split $out \n]
+foreach line $sout {
+	if {[string first Zeilen $line] > -1} {
+		regexp -- {\[\[(.*?)\]\]} $line -- title
+		puts $title
+		set rev [join [page [post $wiki {*}$get / titles $title / prop revisions / rvprop ids|user|comment / rvuser TaxonBot] revisions]]
+		dict with rev {
+			if {[string first datiert $comment] > -1} {
+				puts [set diff "Spezial:Diff/$parentid/next"]
+				puts $comment
+				puts $line
+				lappend resl [regsub -- {(Ersetzungen.*)} $line \[\[$diff|\\1\]\]]
+			}
+		}
+	} else {
+		lappend resl $line
+	}
+}
+puts [string map {* #} [join $resl \n]]
+puts [edit Benutzer_Diskussion:Z_thomas/Sächsische_Denkmallisten/datiert {Bot: Ersetzungen datiert auf d.} [string map {* #} [join $resl \n]]]
+
+exit
+
+if 0 {
+Liste_der_Kulturdenkmale_in_Adorf/Vogtl.
+Liste_der_Kulturdenkmale_in_Annaberg_(A–N)
+Liste_der_Kulturdenkmale_in_Annaberg_(O–Z)
+Liste_der_Kulturdenkmale_in_Arzberg_(Sachsen)
+Liste_der_Kulturdenkmale_in_Augustusburg
+Liste_der_Kulturdenkmale_in_Bad_Düben
+Liste_der_Kulturdenkmale_in_Bad_Gottleuba-Berggießhübel
+Liste_der_Kulturdenkmale_in_Bad_Lausick
+Liste_der_Kulturdenkmale_in_Bad_Schandau
+Liste_der_Kulturdenkmale_in_Bahretal
+Liste_der_Kulturdenkmale_in_Bauda_(Großenhain)
+Liste_der_Kulturdenkmale_in_Beiersdorf
+Liste_der_Kulturdenkmale_in_Beilrode
+Liste_der_Kulturdenkmale_in_Belgern-Schildau
+Liste_der_Kulturdenkmale_in_Belgershain
+Liste_der_Kulturdenkmale_in_Bernstadt_a._d._Eigen
+Liste_der_Kulturdenkmale_in_Bertsdorf-Hörnitz
+Liste_der_Kulturdenkmale_in_Biesnitz
+Liste_der_Kulturdenkmale_in_Blankenhain_(Crimmitschau)
+Liste_der_Kulturdenkmale_in_Bobritzsch-Hilbersdorf
+Liste_der_Kulturdenkmale_in_Borna
+Liste_der_Kulturdenkmale_in_Borsdorf
+Liste_der_Kulturdenkmale_in_Brand-Erbisdorf
+Liste_der_Kulturdenkmale_in_Brandis
+Liste_der_Kulturdenkmale_in_Buchholz
+Liste_der_Kulturdenkmale_in_Burgstädt
+Liste_der_Kulturdenkmale_in_Burkhardtsdorf
+Liste_der_Kulturdenkmale_in_Böhlen_(Sachsen)
+Liste_der_Kulturdenkmale_in_Callenberg
+Liste_der_Kulturdenkmale_in_Canitz_(Riesa)
+Liste_der_Kulturdenkmale_in_Cannewitz_(Grimma)
+Liste_der_Kulturdenkmale_in_Claußnitz
+Liste_der_Kulturdenkmale_in_Colditz
+Liste_der_Kulturdenkmale_in_Dahlen_(Sachsen)
+Liste_der_Kulturdenkmale_in_Delitzsch
+Liste_der_Kulturdenkmale_in_Dennheritz
+Liste_der_Kulturdenkmale_in_Deutschenbora
+Liste_der_Kulturdenkmale_in_Deutschneudorf
+Liste_der_Kulturdenkmale_in_Diera-Zehren
+Liste_der_Kulturdenkmale_in_Dippoldiswalde
+Liste_der_Kulturdenkmale_in_Doberquitz
+Liste_der_Kulturdenkmale_in_Dohna
+Liste_der_Kulturdenkmale_in_Dorfchemnitz
+Liste_der_Kulturdenkmale_in_Dorfhain
+Liste_der_Kulturdenkmale_in_Drebach
+Liste_der_Kulturdenkmale_in_Döbeln
+Liste_der_Kulturdenkmale_in_Döben_(Grimma)
+Liste_der_Kulturdenkmale_in_Dürrröhrsdorf-Dittersbach
+Liste_der_Kulturdenkmale_in_Ebersbach/Sa._(M–Z)
+Liste_der_Kulturdenkmale_in_Ebersbach_(bei_Großenhain)
+Liste_der_Kulturdenkmale_in_Ehrenfriedersdorf
+Liste_der_Kulturdenkmale_in_Eibenstock
+Liste_der_Kulturdenkmale_in_Elsnig
+Liste_der_Kulturdenkmale_in_Elterlein
+Liste_der_Kulturdenkmale_in_Eppendorf
+Liste_der_Kulturdenkmale_in_Erlau_(Sachsen)
+Liste_der_Kulturdenkmale_in_Frankenau_(Mittweida)
+Liste_der_Kulturdenkmale_in_Frankenberg/Sa.
+Liste_der_Kulturdenkmale_in_Frankenhausen_(Crimmitschau)
+Liste_der_Kulturdenkmale_in_Frauenstein_(Erzgebirge)
+Liste_der_Kulturdenkmale_in_Fraureuth
+Liste_der_Kulturdenkmale_in_Freiberg-Altstadt
+Liste_der_Kulturdenkmale_in_Freiberg-Süd
+Liste_der_Kulturdenkmale_in_Fremdiswalde
+Liste_der_Kulturdenkmale_in_Frohburg
+Liste_der_Kulturdenkmale_in_Gablenz_(Crimmitschau)
+Liste_der_Kulturdenkmale_in_Geithain
+Liste_der_Kulturdenkmale_in_Gelenau/Erzgeb.
+Liste_der_Kulturdenkmale_in_Geringswalde
+Liste_der_Kulturdenkmale_in_Gersdorf
+Liste_der_Kulturdenkmale_in_Glashütte_(Sachsen)
+Liste_der_Kulturdenkmale_in_Glaubitz
+Liste_der_Kulturdenkmale_in_Glauchau
+Liste_der_Kulturdenkmale_in_Gohrisch
+Liste_der_Kulturdenkmale_in_Gornsdorf
+Liste_der_Kulturdenkmale_in_Groitzsch
+Liste_der_Kulturdenkmale_in_Großbothen
+Liste_der_Kulturdenkmale_in_Großdubrau
+Liste_der_Kulturdenkmale_in_Großhartmannsdorf
+Liste_der_Kulturdenkmale_in_Großschirma
+Liste_der_Kulturdenkmale_in_Großweitzschen
+Liste_der_Kulturdenkmale_in_Grünhainichen
+Liste_der_Kulturdenkmale_in_Görlitz-Altstadt,_A–K
+Liste_der_Kulturdenkmale_in_Görlitz-Altstadt,_L–Z
+Liste_der_Kulturdenkmale_in_Hainichen
+Liste_der_Kulturdenkmale_in_Hartenstein_(Sachsen)
+Liste_der_Kulturdenkmale_in_Hartha
+Liste_der_Kulturdenkmale_in_Hartmannsdorf-Reichenau
+Liste_der_Kulturdenkmale_in_Hartmannsdorf_(bei_Chemnitz)
+Liste_der_Kulturdenkmale_in_Hartmannsdorf_bei_Kirchberg
+Liste_der_Kulturdenkmale_in_Hausdorf_(Frankenberg)
+Liste_der_Kulturdenkmale_in_Hermsdorf/Erzgeb.
+Liste_der_Kulturdenkmale_in_Hinterhermsdorf
+Liste_der_Kulturdenkmale_in_Hirschstein
+Liste_der_Kulturdenkmale_in_Hohenstein-Ernstthal
+Liste_der_Kulturdenkmale_in_Hohnstein_(Sächsische_Schweiz)
+Liste_der_Kulturdenkmale_in_Innenstadt_(Görlitz),_A–Be
+Liste_der_Kulturdenkmale_in_Innenstadt_(Görlitz),_Bi–D
+Liste_der_Kulturdenkmale_in_Innenstadt_(Görlitz),_L–Q
+Liste_der_Kulturdenkmale_in_Jahnsdorf/Erzgeb.
+Liste_der_Kulturdenkmale_in_Jerisau_(Glauchau)
+Liste_der_Kulturdenkmale_in_Klingenberg_(Sachsen)
+Liste_der_Kulturdenkmale_in_Klingewalde
+Liste_der_Kulturdenkmale_in_Klipphausen
+Liste_der_Kulturdenkmale_in_Klosterbuch
+Liste_der_Kulturdenkmale_in_Kohren-Sahlis
+Liste_der_Kulturdenkmale_in_Kreischa
+Liste_der_Kulturdenkmale_in_Kriebstein
+Liste_der_Kulturdenkmale_in_Kunnerwitz
+Liste_der_Kulturdenkmale_in_Käbschütztal
+Liste_der_Kulturdenkmale_in_Königsfeld_(Sachsen)
+Liste_der_Kulturdenkmale_in_Königshain-Wiederau
+Liste_der_Kulturdenkmale_in_Königshufen
+Liste_der_Kulturdenkmale_in_Königstein_(Sächsische_Schweiz)
+Liste_der_Kulturdenkmale_in_Kössern
+Liste_der_Kulturdenkmale_in_Lampertswalde
+Liste_der_Kulturdenkmale_in_Langenbernsdorf
+Liste_der_Kulturdenkmale_in_Langenhessen
+Liste_der_Kulturdenkmale_in_Langenreinsdorf
+Liste_der_Kulturdenkmale_in_Langenweißbach
+Liste_der_Kulturdenkmale_in_Lauenhain_(Crimmitschau)
+Liste_der_Kulturdenkmale_in_Lauenstein_(Altenberg)
+Liste_der_Kulturdenkmale_in_Lauter-Bernsbach
+Liste_der_Kulturdenkmale_in_Laußig
+Liste_der_Kulturdenkmale_in_Leipnitz_(Grimma)
+Liste_der_Kulturdenkmale_in_Leisnig
+Liste_der_Kulturdenkmale_in_Leubnitz_(Werdau)
+Liste_der_Kulturdenkmale_in_Leubsdorf_(Sachsen)
+Liste_der_Kulturdenkmale_in_Lichtenau_(Sachsen)
+Liste_der_Kulturdenkmale_in_Lichtenberg/Erzgeb.
+Liste_der_Kulturdenkmale_in_Lichtenstein/Sa.
+Liste_der_Kulturdenkmale_in_Lichtentanne
+Liste_der_Kulturdenkmale_in_Liebschützberg
+Liste_der_Kulturdenkmale_in_Liebstadt
+Liste_der_Kulturdenkmale_in_Lommatzsch
+Liste_der_Kulturdenkmale_in_Ludwigsdorf_(Görlitz)
+Liste_der_Kulturdenkmale_in_Lunzenau
+Liste_der_Kulturdenkmale_in_Löbnitz_(Sachsen)
+Liste_der_Kulturdenkmale_in_Marienberg
+Liste_der_Kulturdenkmale_in_Marienthal_West
+Liste_der_Kulturdenkmale_in_Markranstädt
+Liste_der_Kulturdenkmale_in_Meerane
+Liste_der_Kulturdenkmale_in_Mitte-Nord
+Liste_der_Kulturdenkmale_in_Mitte-West
+Liste_der_Kulturdenkmale_in_Mittweida
+Liste_der_Kulturdenkmale_in_Mochau
+Liste_der_Kulturdenkmale_in_Mockrehna
+Liste_der_Kulturdenkmale_in_Mosel_(Zwickau)
+Liste_der_Kulturdenkmale_in_Mulda/Sa.
+Liste_der_Kulturdenkmale_in_Muldenhammer
+Liste_der_Kulturdenkmale_in_Mutzschen
+Liste_der_Kulturdenkmale_in_Mylau
+Liste_der_Kulturdenkmale_in_Mügeln
+Liste_der_Kulturdenkmale_in_Müglitztal
+Liste_der_Kulturdenkmale_in_Mühlau_(Sachsen)
+Liste_der_Kulturdenkmale_in_Mühlbach_(Frankenberg)
+Liste_der_Kulturdenkmale_in_Mülsen
+Liste_der_Kulturdenkmale_in_Narsdorf
+Liste_der_Kulturdenkmale_in_Naundorf_(Sachsen)
+Liste_der_Kulturdenkmale_in_Neuensalz
+Liste_der_Kulturdenkmale_in_Neugersdorf
+Liste_der_Kulturdenkmale_in_Neustadt_in_Sachsen
+Liste_der_Kulturdenkmale_in_Niederau
+Liste_der_Kulturdenkmale_in_Niederfrohna
+Liste_der_Kulturdenkmale_in_Niederlungwitz
+Liste_der_Kulturdenkmale_in_Niederplanitz
+Liste_der_Kulturdenkmale_in_Nikolaivorstadt
+Liste_der_Kulturdenkmale_in_Nünchritz
+Liste_der_Kulturdenkmale_in_Oberbärenburg
+Liste_der_Kulturdenkmale_in_Oberlungwitz
+Liste_der_Kulturdenkmale_in_Oberrothenbach
+Liste_der_Kulturdenkmale_in_Oberschöna
+Liste_der_Kulturdenkmale_in_Oberwiera
+Liste_der_Kulturdenkmale_in_Oderwitz
+Liste_der_Kulturdenkmale_in_Oederan
+Liste_der_Kulturdenkmale_in_Olbernhau
+Liste_der_Kulturdenkmale_in_Ostrau_(Sachsen)
+Liste_der_Kulturdenkmale_in_Ottendorf_(Sebnitz)
+Liste_der_Kulturdenkmale_in_Parthenstein
+Liste_der_Kulturdenkmale_in_Pegau
+Liste_der_Kulturdenkmale_in_Pockau-Lengefeld
+Liste_der_Kulturdenkmale_in_Priestewitz
+Liste_der_Kulturdenkmale_in_Rackwitz
+Liste_der_Kulturdenkmale_in_Rechenberg-Bienenmühle
+Liste_der_Kulturdenkmale_in_Regis-Breitingen
+Liste_der_Kulturdenkmale_in_Reichenbach_im_Vogtland_(A–K)
+Liste_der_Kulturdenkmale_in_Reichenbach_im_Vogtland_(L–Z)
+Liste_der_Kulturdenkmale_in_Reinhardtsdorf-Schöna
+Liste_der_Kulturdenkmale_in_Reinholdshain_(Glauchau)
+Liste_der_Kulturdenkmale_in_Reinsberg_(Sachsen)
+Liste_der_Kulturdenkmale_in_Reinsdorf_(Sachsen)
+Liste_der_Kulturdenkmale_in_Remse
+Liste_der_Kulturdenkmale_in_Riesa_(L–Z)
+Liste_der_Kulturdenkmale_in_Rippien
+Liste_der_Kulturdenkmale_in_Rochlitz
+Liste_der_Kulturdenkmale_in_Rodewisch
+Liste_der_Kulturdenkmale_in_Rosenthal-Bielatal
+Liste_der_Kulturdenkmale_in_Rossau_(Sachsen)
+Liste_der_Kulturdenkmale_in_Roßwein
+Liste_der_Kulturdenkmale_in_Rudelswalde
+Liste_der_Kulturdenkmale_in_Rötha
+Liste_der_Kulturdenkmale_in_Sachsenburg_(Frankenberg)
+Liste_der_Kulturdenkmale_in_Saupsdorf
+Liste_der_Kulturdenkmale_in_Sayda
+Liste_der_Kulturdenkmale_in_Schedewitz/Geinitzsiedlung
+Liste_der_Kulturdenkmale_in_Schkeuditz
+Liste_der_Kulturdenkmale_in_Schkortitz
+Liste_der_Kulturdenkmale_in_Schneeberg_(Erzgebirge)
+Liste_der_Kulturdenkmale_in_Schneppendorf
+Liste_der_Kulturdenkmale_in_Schwarzenberg/Erzgeb.
+Liste_der_Kulturdenkmale_in_Schönberg_(Sachsen)
+Liste_der_Kulturdenkmale_in_Schönfeld_(Landkreis_Meißen)
+Liste_der_Kulturdenkmale_in_Sebnitz
+Liste_der_Kulturdenkmale_in_Seelitz
+Liste_der_Kulturdenkmale_in_Sehmatal
+Liste_der_Kulturdenkmale_in_St._Egidien
+Liste_der_Kulturdenkmale_in_Stauchitz
+Liste_der_Kulturdenkmale_in_Steinpleis
+Liste_der_Kulturdenkmale_in_Stollberg/Erzgeb.
+Liste_der_Kulturdenkmale_in_Stolpen
+Liste_der_Kulturdenkmale_in_Strehla
+Liste_der_Kulturdenkmale_in_Striegistal
+Liste_der_Kulturdenkmale_in_Taura
+Liste_der_Kulturdenkmale_in_Thallwitz
+Liste_der_Kulturdenkmale_in_Tharandt
+Liste_der_Kulturdenkmale_in_Thiendorf
+Liste_der_Kulturdenkmale_in_Tirpersdorf
+Liste_der_Kulturdenkmale_in_Torgau_(A–L)
+Liste_der_Kulturdenkmale_in_Trebsen/Mulde
+Liste_der_Kulturdenkmale_in_Treuen
+Liste_der_Kulturdenkmale_in_Walda-Kleinthiemig
+Liste_der_Kulturdenkmale_in_Waldenburg_(Sachsen)
+Liste_der_Kulturdenkmale_in_Waldheim
+Liste_der_Kulturdenkmale_in_Wechselburg
+Liste_der_Kulturdenkmale_in_Weinhübel
+Liste_der_Kulturdenkmale_in_Weischlitz
+Liste_der_Kulturdenkmale_in_Weißenborn/Erzgeb.
+Liste_der_Kulturdenkmale_in_Wermsdorf
+Liste_der_Kulturdenkmale_in_Wernsdorf_(Glauchau)
+Liste_der_Kulturdenkmale_in_Wildenfels
+}
+set lpage {
+Liste_der_Kulturdenkmale_in_Wilsdruff
+Liste_der_Kulturdenkmale_in_Wuhsen
+Liste_der_Kulturdenkmale_in_Zeithain
+Liste_der_Kulturdenkmale_in_Zettlitz
+Liste_der_Kulturdenkmale_in_Ziegenhain_(Nossen)
+Liste_der_Kulturdenkmale_in_Zinnwald-Georgenfeld
+Liste_der_Kulturdenkmale_in_Zschaitz-Ottewig
+Liste_der_Kulturdenkmale_in_Zschorlau
+Liste_der_Kulturdenkmale_in_Zug_(Freiberg)
+Liste_der_Kulturdenkmale_in_Zwenkau
+Liste_der_Kulturdenkmale_in_der_Innenstadt_(Zwickau)
+Liste_der_Umgebindehäuser_im_Landkreis_Sächsische_Schweiz-Osterzgebirge
+Liste_der_technischen_Denkmale_im_Landkreis_Mittelsachsen
+Liste_der_technischen_Denkmale_im_Landkreis_Sächsische_Schweiz-Osterzgebirge
+}
+
+foreach page $lpage {
+	puts \n\n\n[incr i]:$page
+	set c [set nc [conts t $page x]]
+	set sc [split $c \n]
+	set j 0
+	foreach l $sc {
+		if {[string first datiert $l] > -1} {
+			puts \n[string map {datiert ---datiert---} $l]
+			input ers "\nErsetzen? "
+			if {$ers ne {}} {
+				set nl [string map {datiert d.} $l]
+				puts \n$nl
+				set nc [string map [list $l $nl] $nc]
+				incr j
+			}
+		}
+	}
+	puts \n
+	set f [open z-thomas1.out a]
+	if !$j {
+		puts "* \[\[[sql -> $page]\]\]: keine Ersetzungen"
+		puts $f "* \[\[[sql -> $page]\]\]: keine Ersetzungen"
+	} else {
+		puts "* \[\[[sql -> $page]\]\]: Ersetzungen in $j Zeilen"
+		puts $f "* \[\[[sql -> $page]\]\]: Ersetzungen in $j Zeilen"
+	}
+	close $f
+	puts \n[edit $page "Bot: Ersetzung datiert → d. in $j Zeilen" $nc / minor]
+}
